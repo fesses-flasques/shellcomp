@@ -1,6 +1,9 @@
 #ifndef		BUFFER_H_
 # define	BUFFER_H_
 
+# include	"build_opts.h"
+# define	BUFF_SIZE	1
+
 typedef	struct	s_buff {
   size_t	count;
   char		*buff;
@@ -9,4 +12,6 @@ typedef	struct	s_buff {
 
 int	push_buff_left(char *, size_t);
 int	push_buff_right(char *, size_t);
+int	buff_init(t_opts *);
+
 #endif

@@ -62,7 +62,7 @@ launch_shells(t_opts *opt) {
     return (EXIT_FAILURE);
   }
   if (g_select.fd_l == -2 || g_select.fd_r == -2) {
-    exit(1);
+    return (EXIT_FAILURE);
   }
   return (EXIT_SUCCESS);
 }

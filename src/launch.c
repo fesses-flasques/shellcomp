@@ -1,4 +1,5 @@
 #include	<curses.h>
+#include	"buffer.h"
 #include	"windows.h"
 #include	"shellcomp.h"
 
@@ -18,6 +19,8 @@ launch(t_opts *opt) {
   if (init_run(opt) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   if (win_init(opt) == EXIT_FAILURE)
+    return (EXIT_FAILURE);
+  if (buff_init(opt) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   ret = loop(opt);
   if (callback_childs() == EXIT_FAILURE)
