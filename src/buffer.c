@@ -6,6 +6,20 @@ static struct {
   t_buff	*r;
 }		g_buff;
 
+#include	<stdio.h>
+#define	SEP "%ld ===================================\n"
+void
+buff_dumper() {
+  t_buff *a = g_buff.l;
+  while (a) {
+    fprintf(stdout, SEP, a->count);
+    fflush(stdout);
+    write(1, a->buff, a->count);
+    write(1, "\n", 1);
+    a = a->next;
+  }
+}
+
 static int
 init_buff(t_buff *obj) {
   obj->count = 0;
@@ -46,20 +60,19 @@ add_buff(t_buff *obj) {
 int
 push_buff(t_buff *buff, char *str, size_t count) {
   size_t	i = 0, d;
-  t_buff	*set;
 
-  set = buff;
-  while (set->next) set = set->next;
+  while (buff->next) buff = buff->next;
 
-  while (i <= count) {
-    if (set->count == BUFF_SIZE) {
-      if ((set = add_buff(set)) == NULL) {
+  while (i < count) {
+    if (buff->count == BUFF_SIZE) {
+      if ((buff = add_buff(buff)) == NULL) {
 	return (EXIT_FAILURE);
       }
     }
-    d = ((count < (BUFF_SIZE - buff->count)) ? count : BUFF_SIZE);
-    memcpy(buff->buff + buff->count, str, d);
+    d = (((count - i) < (BUFF_SIZE - buff->count)) ? count - i : BUFF_SIZE - buff->count);
+    memcpy(buff->buff + buff->count, str + i, d);
     i += d;
+    buff->count += d;
   }
   return (EXIT_SUCCESS);
 }
