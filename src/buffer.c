@@ -62,7 +62,6 @@ push_buff(t_buff *buff, char *str, size_t count) {
   size_t	i = 0, d;
 
   while (buff->next) buff = buff->next;
-
   while (i < count) {
     if (buff->count == BUFF_SIZE) {
       if ((buff = add_buff(buff)) == NULL) {
