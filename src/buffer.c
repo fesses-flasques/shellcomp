@@ -29,6 +29,36 @@ init_buff(t_buff *obj) {
   return (EXIT_SUCCESS);
 }
 
+static int
+buff_lines(
+    t_buff *b,
+    int (*cb)(char *, size_t),
+    unsigned short x,
+    unsigned short y
+    ) {
+  (void)x,(void)y,(void)b;
+  return (cb("potatoe", 4));
+  return (EXIT_SUCCESS);
+}
+
+int
+buff_lines_r(
+    int (*cb)(char *, size_t),
+    unsigned short x,
+    unsigned short y
+    ) {
+  return (buff_lines(g_buff.r, cb, x, y));
+}
+
+int
+buff_lines_l(
+    int (*cb)(char *, size_t),
+    unsigned short x,
+    unsigned short y
+    ) {
+  return (buff_lines(g_buff.l, cb, x, y));
+}
+
 int
 buff_init(t_opts *opt) {
   (void)opt;
@@ -68,7 +98,10 @@ push_buff(t_buff *buff, char *str, size_t count) {
 	return (EXIT_FAILURE);
       }
     }
-    d = (((count - i) < (BUFF_SIZE - buff->count)) ? count - i : BUFF_SIZE - buff->count);
+    d = ( ((count - i) < (BUFF_SIZE - buff->count)) ?
+	count - i :
+	BUFF_SIZE - buff->count
+	);
     memcpy(buff->buff + buff->count, str + i, d);
     i += d;
     buff->count += d;

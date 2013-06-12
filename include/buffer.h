@@ -14,5 +14,7 @@ int	push_buff_left(char *, size_t);
 int	push_buff_right(char *, size_t);
 int	buff_init(t_opts *);
 void	buff_dumper();
+int	buff_lines_r(int (*)(char *, size_t), unsigned short, unsigned short);
+int	buff_lines_l(int (*)(char *, size_t), unsigned short, unsigned short);
 
 #endif

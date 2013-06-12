@@ -25,7 +25,6 @@ int
 write_to_window(WINDOW *w, char *str, size_t s) {
   size_t	i = 0;
 
-  wmove(w, 0, 0);
   while (i < s) {
     wprintw(w, "%c", str[i]);
     ++i;
@@ -44,6 +43,32 @@ write_to_right(char *str, size_t s) {
 int
 write_to_left(char *str, size_t s) {
   return (push_buff_left(str, s));
+}
+
+int
+update_display_r(char *str, size_t s) {
+  return (write_to_window(g_windows.right, str, s));
+}
+
+int
+update_display_l(char *str, size_t s) {
+  return (write_to_window(g_windows.left, str, s));
+}
+
+int
+update_display(void) {
+  register unsigned short	x, y;
+
+  if (wmove(g_windows.left, 0, 0) == ERR ||
+      wmove(g_windows.right, 0, 0) == ERR)
+    return (EXIT_FAILURE);
+  x = g_windows.x;
+  y = g_windows.y;
+  if (buff_lines_r(&update_display_r, x, y) == EXIT_FAILURE)
+    return (EXIT_FAILURE);
+  if (buff_lines_l(&update_display_l, x, y) == EXIT_FAILURE)
+    return (EXIT_FAILURE);
+  return (EXIT_SUCCESS);
 }
 
 static int
@@ -85,10 +110,14 @@ int
 refresh_win(t_opts *opt) {
   (void)opt;
   refresh();
-  wrefresh(g_windows.bd_left);
-  wrefresh(g_windows.left);
-  wrefresh(g_windows.bd_right);
-  wrefresh(g_windows.right);
+  if (wrefresh(g_windows.bd_left) == ERR)
+    return (EXIT_FAILURE);
+  if (wrefresh(g_windows.left) == ERR)
+    return (EXIT_FAILURE);
+  if (wrefresh(g_windows.bd_right) == ERR)
+    return (EXIT_FAILURE);
+  if (wrefresh(g_windows.right) == ERR)
+    return (EXIT_FAILURE);
   return (EXIT_SUCCESS);
 }
 
@@ -168,7 +197,8 @@ reload_interface(t_opts *opt) {
   if (mvwin(g_windows.right, 1, g_windows.bd_x + 1))
     return (fail_print(ERR_MVWIN));
 
-  refresh_win(opt);
+  if (refresh_win(opt) == EXIT_FAILURE)
+    return (EXIT_FAILURE);
   return (EXIT_SUCCESS);
 }
 
@@ -180,7 +210,8 @@ load_interface(t_opts *opt) {
   if (init_winboxes(opt) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   if (g_run.running)
-    refresh_win(opt);
+    if (refresh_win(opt) == EXIT_FAILURE)
+      return (EXIT_FAILURE);
   return (EXIT_SUCCESS);
 }
 

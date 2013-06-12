@@ -118,7 +118,10 @@ do_select(t_opts *opt, int highest) {
     if (monitoring(opt) == EXIT_FAILURE) {
       return (EXIT_FAILURE);
     }
-    refresh_win(opt);
+    if (update_display() == EXIT_FAILURE)
+      return (EXIT_FAILURE);
+    if (refresh_win(opt) == EXIT_FAILURE)
+      return (EXIT_FAILURE);
   }
   return (EXIT_SUCCESS);
 }
