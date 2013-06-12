@@ -26,13 +26,11 @@ write_to_window(WINDOW *w, char *str, size_t s) {
   size_t	i = 0;
 
   while (i < s) {
-    wprintw(w, "%c", str[i]);
+    if (str[i] != '\r')
+      wprintw(w, "%c", str[i]);
     ++i;
   }
   return (EXIT_SUCCESS);
-  return ((mvwprintw(w, 0, 0, "%s", str) != ERR) ?
-      EXIT_SUCCESS :
-      EXIT_FAILURE);
 }
 
 int
@@ -64,6 +62,7 @@ update_display(void) {
     return (EXIT_FAILURE);
   x = g_windows.x;
   y = g_windows.y;
+  logger("\n======================\n");
   if (buff_lines_r(&update_display_r, x, y) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   if (buff_lines_l(&update_display_l, x, y) == EXIT_FAILURE)
@@ -78,9 +77,10 @@ aff_invalid_range(t_opts *opt, int aff) {
 
   (void)opt;
   if (aff) {
-    if (!n)
+    if (!n) {
       if (!(n = newwin(g_winsize.ws_row, g_winsize.ws_col, 0, 0)))
 	return (EXIT_SUCCESS);
+    }
     wmove(n, 0, 0);
     wattron(n, COLOR_PAIR(1));
     while (i-- > 0)

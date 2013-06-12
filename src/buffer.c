@@ -1,4 +1,5 @@
 #include	<stdlib.h>
+#include	"shellcomp.h"
 #include	"buffer.h"
 
 static struct {
@@ -30,6 +31,19 @@ init_buff(t_buff *obj) {
 }
 
 static int
+send_lines(t_buff *b, size_t count, int (*cb)(char *, size_t)) {
+  if (b) {
+    if (cb(b->buff + count, BUFF_SIZE - count) == EXIT_FAILURE)
+      return (EXIT_FAILURE);
+  }
+  while ((b = b->next) != NULL) {
+    if (cb(b->buff, BUFF_SIZE) == EXIT_FAILURE)
+      return (EXIT_FAILURE);
+  }
+  return (EXIT_SUCCESS);
+}
+
+static int
 buff_lines(
     t_buff *b,
     int (*cb)(char *, size_t),
@@ -37,7 +51,7 @@ buff_lines(
     unsigned short y
     ) {
   (void)x,(void)y,(void)b;
-  return (cb("potatoe", 4));
+  return (send_lines(b, 0, cb));
   return (EXIT_SUCCESS);
 }
 

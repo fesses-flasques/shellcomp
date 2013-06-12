@@ -2,7 +2,8 @@
 # define	BUFFER_H_
 
 # include	"build_opts.h"
-# define	BUFF_SIZE	4096
+# define	BUFF_SIZE	50
+# define	LIMIT_BUFF	9 // TODO
 
 typedef	struct	s_buff {
   size_t	count;
