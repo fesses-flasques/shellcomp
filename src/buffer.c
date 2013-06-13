@@ -32,10 +32,10 @@ init_buff(t_buff *obj) {
 
 static int
 send_lines(t_buff *b, size_t count, int (*cb)(char *, size_t)) {
-  if (b) {
-    if (cb(b->buff + count, BUFF_SIZE - count) == EXIT_FAILURE)
-      return (EXIT_FAILURE);
-  }
+  if (!b)
+    return (EXIT_SUCCESS);
+  if (cb(b->buff + count, BUFF_SIZE - count) == EXIT_FAILURE)
+    return (EXIT_FAILURE);
   while ((b = b->next) != NULL) {
     if (cb(b->buff, BUFF_SIZE) == EXIT_FAILURE)
       return (EXIT_FAILURE);
