@@ -7,7 +7,7 @@
 #include	"windows.h"
 #include	"shellcomp.h"
 
-struct winsize	g_winsize;
+static struct winsize	g_winsize;
 
 static struct {
   WINDOW	*main;
@@ -20,6 +20,18 @@ static struct {
   int		x;
   int		y;
 }		g_windows;
+
+int
+send_size(int fd) {
+  struct winsize	ws;
+
+  logger_int(g_windows.y);
+  ws.ws_row = g_windows.y;
+  ws.ws_col = g_windows.x;
+  if (ioctl(fd, TIOCSWINSZ, &ws) == -1)
+    return (fail_print(ERR_IOCTL));
+  return (EXIT_SUCCESS);
+}
 
 int
 write_to_window(WINDOW *w, char *str, size_t s) {
@@ -62,7 +74,6 @@ update_display(void) {
     return (EXIT_FAILURE);
   x = g_windows.x;
   y = g_windows.y;
-  logger("\n======================\n");
   if (buff_lines_r(&update_display_r, x, y) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   if (buff_lines_l(&update_display_l, x, y) == EXIT_FAILURE)

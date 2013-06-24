@@ -17,6 +17,17 @@ static struct {
   int		fd_r;
 }		g_select;
 
+int
+apply_sizes(void) {
+  if (send_size(g_select.fd_l) == EXIT_FAILURE
+#ifndef NO_SECOND
+      || send_size(g_select.fd_r) == EXIT_FAILURE
+#endif
+     )
+    return (EXIT_FAILURE);
+  return (EXIT_SUCCESS);
+}
+
 static int
 forkito(t_opts *opt, char *shell) {
   int	fd_slave;
@@ -64,6 +75,12 @@ launch_shells(t_opts *opt) {
   if (g_select.fd_l == -2 || g_select.fd_r == -2) {
     return (EXIT_FAILURE);
   }
+  if (send_size(g_select.fd_l) == EXIT_FAILURE
+#ifndef NO_SECOND
+      || send_size(g_select.fd_r) == EXIT_FAILURE
+#endif
+     ) return (EXIT_FAILURE);
+
   return (EXIT_SUCCESS);
 }
 
@@ -167,6 +184,9 @@ loop(t_opts *opt) {
   int		highest;
 
   if (launch_shells(opt) == EXIT_FAILURE) {
+    return (EXIT_FAILURE);
+  }
+  if (apply_sizes() == EXIT_FAILURE) {
     return (EXIT_FAILURE);
   }
   fd_setter();

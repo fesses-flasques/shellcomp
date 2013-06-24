@@ -8,6 +8,7 @@ int		loop(t_opts *);
 int		launch(t_opts *);
 void		sig_catch(int);
 int		callback_childs();
+int		apply_sizes(void);
 
 //TMP
 void	logger_int(int);
