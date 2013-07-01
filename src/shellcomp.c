@@ -54,7 +54,7 @@ check_opt(t_opts *opt) {
 static int
 init_signals(__sighandler_t assign) {
   int		signum_tab[] = {
-    //SIGINT,
+    SIGINT,
     SIGTERM,
     SIGWINCH,
     SIGQUIT
