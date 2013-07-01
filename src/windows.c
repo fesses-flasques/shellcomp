@@ -179,6 +179,42 @@ term_sizing(t_opts *opt) {
   return (EXIT_SUCCESS);
 }
 
+static int
+resize_bd_wins(void) {
+  if (wresize(g_windows.bd_left, g_windows.bd_y, g_windows.bd_x) == ERR)
+    return (fail_print(ERR_WINRSZ));
+  if (wresize(g_windows.bd_right, g_windows.bd_y, g_windows.bd_x) == ERR)
+    return (fail_print(ERR_WINRSZ));
+  return (EXIT_SUCCESS);
+}
+
+static int
+resize_box_wins(void) {
+  if (box(g_windows.bd_left, 0, 0) != OK)
+    return (fail_print(ERR_BOX));
+  if (box(g_windows.bd_right, 0, 0) != OK)
+    return (fail_print(ERR_BOX));
+  return (EXIT_SUCCESS);
+}
+
+static int
+resize_wins(void) {
+  if (wresize(g_windows.left, g_windows.y, g_windows.x) == ERR)
+    return (fail_print(ERR_WINRSZ));
+  if (wresize(g_windows.right, g_windows.y, g_windows.x) == ERR)
+    return (fail_print(ERR_WINRSZ));
+  return (EXIT_SUCCESS);
+}
+
+static int
+mv_wins(void) {
+  if (mvwin(g_windows.bd_right, 0, g_windows.bd_x))
+    return (fail_print(ERR_MVWIN));
+  if (mvwin(g_windows.right, 1, g_windows.bd_x + 1))
+    return (fail_print(ERR_MVWIN));
+  return (EXIT_SUCCESS);
+}
+
 int
 reload_interface(t_opts *opt) {
   wclear(g_windows.main);
@@ -189,25 +225,11 @@ reload_interface(t_opts *opt) {
     return (EXIT_FAILURE);
   if (!g_run.running)
     return (EXIT_SUCCESS);
-
-  if (wresize(g_windows.bd_left, g_windows.bd_y, g_windows.bd_x) == ERR)
-    return (fail_print(ERR_WINRSZ));
-  if (box(g_windows.bd_left, 0, 0) != OK)
-    return (fail_print(ERR_BOX));
-  if (wresize(g_windows.bd_right, g_windows.bd_y, g_windows.bd_x) == ERR)
-    return (fail_print(ERR_WINRSZ));
-  if (mvwin(g_windows.bd_right, 0, g_windows.bd_x))
-    return (fail_print(ERR_MVWIN));
-  if (box(g_windows.bd_right, 0, 0) != OK)
-    return (fail_print(ERR_BOX));
-
-  if (wresize(g_windows.left, g_windows.y, g_windows.x) == ERR)
-    return (fail_print(ERR_WINRSZ));
-  if (wresize(g_windows.right, g_windows.y, g_windows.x) == ERR)
-    return (fail_print(ERR_WINRSZ));
-  if (mvwin(g_windows.right, 1, g_windows.bd_x + 1))
-    return (fail_print(ERR_MVWIN));
-
+  if (resize_bd_wins() == EXIT_FAILURE ||
+      resize_box_wins() == EXIT_FAILURE ||
+      resize_wins() == EXIT_FAILURE ||
+      mv_wins() == EXIT_FAILURE)
+    return (EXIT_FAILURE);
   if (refresh_win(opt) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   return (EXIT_SUCCESS);
