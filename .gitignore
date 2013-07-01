@@ -1,5 +1,6 @@
 obj/build_opts/build_opts.c
 obj/build_opts/build_opts_pub.c
+abc
 .*.sw?
 # Object files
 *.o
