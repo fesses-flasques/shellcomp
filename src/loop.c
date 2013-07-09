@@ -75,12 +75,8 @@ launch_shells(t_opts *opt) {
   if (g_select.fd_l == -2 || g_select.fd_r == -2) {
     return (EXIT_FAILURE);
   }
-  if (send_size(g_select.fd_l) == EXIT_FAILURE
-#ifndef NO_SECOND
-      || send_size(g_select.fd_r) == EXIT_FAILURE
-#endif
-     ) return (EXIT_FAILURE);
-
+  if (apply_sizes() == EXIT_FAILURE)
+    return (EXIT_FAILURE);
   return (EXIT_SUCCESS);
 }
 
