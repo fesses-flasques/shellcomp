@@ -4,6 +4,7 @@
 # include	"build_opts.h"
 # include	"shellcomp.h"
 
+int		term_sizing(t_opts *);
 int		send_size(int);
 int		update_display(void);
 int		write_to_right(char *, size_t);

@@ -25,7 +25,6 @@ int
 send_size(int fd) {
   struct winsize	ws;
 
-  logger_int(g_windows.y);
   ws.ws_row = g_windows.y;
   ws.ws_col = g_windows.x;
   if (ioctl(fd, TIOCSWINSZ, &ws) == -1)
@@ -164,7 +163,7 @@ init_winboxes(t_opts *opt) {
   return (EXIT_SUCCESS);
 }
 
-static int
+int
 term_sizing(t_opts *opt) {
   if (ioctl(0, TIOCGWINSZ, &g_winsize) == -1)
     return (fail_print(ERR_IOCTL));
@@ -221,8 +220,10 @@ reload_interface(t_opts *opt) {
   wclear(g_windows.bd_left);
   wclear(g_windows.bd_right);
 
+#if 0
   if (term_sizing(opt) == EXIT_FAILURE)
     return (EXIT_FAILURE);
+#endif
   if (!g_run.running)
     return (EXIT_SUCCESS);
   if (resize_bd_wins() == EXIT_FAILURE ||

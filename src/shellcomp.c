@@ -24,6 +24,8 @@ void logger_int(int i) {
 void
 sig_catch(int sig) {
   if (sig == SIGWINCH) {
+    if (term_sizing(NULL) == EXIT_FAILURE)
+      exit(EXIT_FAILURE);
     if (apply_sizes() == EXIT_FAILURE)
       exit(EXIT_FAILURE);
     if (reload_interface(NULL) == EXIT_FAILURE)
