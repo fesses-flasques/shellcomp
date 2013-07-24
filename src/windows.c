@@ -19,14 +19,14 @@ static struct {
   int		bd_y;
   int		x;
   int		y;
-}		g_windows;
+}		*g_windows = NULL;
 
 int
 send_size(int fd) {
   struct winsize	ws;
 
-  ws.ws_row = g_windows.y;
-  ws.ws_col = g_windows.x;
+  ws.ws_row = g_windows->y;
+  ws.ws_col = g_windows->x;
   if (ioctl(fd, TIOCSWINSZ, &ws) == -1)
     return (fail_print(ERR_IOCTL));
   return (EXIT_SUCCESS);
@@ -56,23 +56,23 @@ write_to_left(char *str, size_t s) {
 
 int
 update_display_r(char *str, size_t s) {
-  return (write_to_window(g_windows.right, str, s));
+  return (write_to_window(g_windows->right, str, s));
 }
 
 int
 update_display_l(char *str, size_t s) {
-  return (write_to_window(g_windows.left, str, s));
+  return (write_to_window(g_windows->left, str, s));
 }
 
 int
 update_display(void) {
   register unsigned short	x, y;
 
-  if (wmove(g_windows.left, 0, 0) == ERR ||
-      wmove(g_windows.right, 0, 0) == ERR)
+  if (wmove(g_windows->left, 0, 0) == ERR ||
+      wmove(g_windows->right, 0, 0) == ERR)
     return (EXIT_FAILURE);
-  x = g_windows.x;
-  y = g_windows.y;
+  x = g_windows->x;
+  y = g_windows->y;
   if (buff_lines_r(&update_display_r, x, y) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   if (buff_lines_l(&update_display_l, x, y) == EXIT_FAILURE)
@@ -120,13 +120,13 @@ int
 refresh_win(t_opts *opt) {
   (void)opt;
   refresh();
-  if (wrefresh(g_windows.bd_left) == ERR)
+  if (wrefresh(g_windows->bd_left) == ERR)
     return (EXIT_FAILURE);
-  if (wrefresh(g_windows.left) == ERR)
+  if (wrefresh(g_windows->left) == ERR)
     return (EXIT_FAILURE);
-  if (wrefresh(g_windows.bd_right) == ERR)
+  if (wrefresh(g_windows->bd_right) == ERR)
     return (EXIT_FAILURE);
-  if (wrefresh(g_windows.right) == ERR)
+  if (wrefresh(g_windows->right) == ERR)
     return (EXIT_FAILURE);
   return (EXIT_SUCCESS);
 }
@@ -136,7 +136,7 @@ init_winboxes_bd(t_opts *opt, int posx, int posy) {
   WINDOW	*win;
 
   (void)opt;
-  if (!(win = newwin(g_windows.bd_y, g_windows.bd_x, posx, posy))) {
+  if (!(win = newwin(g_windows->bd_y, g_windows->bd_x, posx, posy))) {
     fail_print(ERR_NEWWIN);
     return (NULL);
   }
@@ -149,15 +149,15 @@ init_winboxes_bd(t_opts *opt, int posx, int posy) {
 
 static int
 init_winboxes(t_opts *opt) {
-  if (!(g_windows.bd_left = init_winboxes_bd(opt, 0, 0)))
+  if (!(g_windows->bd_left = init_winboxes_bd(opt, 0, 0)))
     return (EXIT_FAILURE);
-  if (!(g_windows.bd_right = init_winboxes_bd(opt, 0, g_windows.bd_x)))
+  if (!(g_windows->bd_right = init_winboxes_bd(opt, 0, g_windows->bd_x)))
     return (EXIT_FAILURE);
 
-  if (!(g_windows.left = newwin(g_windows.y, g_windows.x, 1, 1)))
+  if (!(g_windows->left = newwin(g_windows->y, g_windows->x, 1, 1)))
     return (fail_print(ERR_NEWWIN));
-  if (!(g_windows.right = newwin(g_windows.y, g_windows.x,
-	  1, g_windows.bd_x + 1)))
+  if (!(g_windows->right = newwin(g_windows->y, g_windows->x,
+	  1, g_windows->bd_x + 1)))
     return (fail_print(ERR_NEWWIN));
   /**/
   return (EXIT_SUCCESS);
@@ -169,10 +169,10 @@ term_sizing(t_opts *opt) {
     return (fail_print(ERR_IOCTL));
   if (resize_term(g_winsize.ws_row, g_winsize.ws_col) == ERR)
     return (fail_print(ERR_RESIZE));
-  g_windows.bd_x = (g_winsize.ws_col / 2);
-  g_windows.bd_y = g_winsize.ws_row;
-  g_windows.x = g_windows.bd_x - 2;
-  g_windows.y = g_windows.bd_y - 2;
+  g_windows->bd_x = (g_winsize.ws_col / 2);
+  g_windows->bd_y = g_winsize.ws_row;
+  g_windows->x = g_windows->bd_x - 2;
+  g_windows->y = g_windows->bd_y - 2;
   if (invalid_range() == EXIT_FAILURE)
     return (aff_invalid_range(opt, 1));
   return (EXIT_SUCCESS);
@@ -180,45 +180,45 @@ term_sizing(t_opts *opt) {
 
 static int
 resize_bd_wins(void) {
-  if (wresize(g_windows.bd_left, g_windows.bd_y, g_windows.bd_x) == ERR)
+  if (wresize(g_windows->bd_left, g_windows->bd_y, g_windows->bd_x) == ERR)
     return (fail_print(ERR_WINRSZ));
-  if (wresize(g_windows.bd_right, g_windows.bd_y, g_windows.bd_x) == ERR)
+  if (wresize(g_windows->bd_right, g_windows->bd_y, g_windows->bd_x) == ERR)
     return (fail_print(ERR_WINRSZ));
   return (EXIT_SUCCESS);
 }
 
 static int
 resize_box_wins(void) {
-  if (box(g_windows.bd_left, 0, 0) != OK)
+  if (box(g_windows->bd_left, 0, 0) != OK)
     return (fail_print(ERR_BOX));
-  if (box(g_windows.bd_right, 0, 0) != OK)
+  if (box(g_windows->bd_right, 0, 0) != OK)
     return (fail_print(ERR_BOX));
   return (EXIT_SUCCESS);
 }
 
 static int
 resize_wins(void) {
-  if (wresize(g_windows.left, g_windows.y, g_windows.x) == ERR)
+  if (wresize(g_windows->left, g_windows->y, g_windows->x) == ERR)
     return (fail_print(ERR_WINRSZ));
-  if (wresize(g_windows.right, g_windows.y, g_windows.x) == ERR)
+  if (wresize(g_windows->right, g_windows->y, g_windows->x) == ERR)
     return (fail_print(ERR_WINRSZ));
   return (EXIT_SUCCESS);
 }
 
 static int
 mv_wins(void) {
-  if (mvwin(g_windows.bd_right, 0, g_windows.bd_x))
+  if (mvwin(g_windows->bd_right, 0, g_windows->bd_x))
     return (fail_print(ERR_MVWIN));
-  if (mvwin(g_windows.right, 1, g_windows.bd_x + 1))
+  if (mvwin(g_windows->right, 1, g_windows->bd_x + 1))
     return (fail_print(ERR_MVWIN));
   return (EXIT_SUCCESS);
 }
 
 int
 reload_interface(t_opts *opt) {
-  wclear(g_windows.main);
-  wclear(g_windows.bd_left);
-  wclear(g_windows.bd_right);
+  wclear(g_windows->main);
+  wclear(g_windows->bd_left);
+  wclear(g_windows->bd_right);
 
 #if 0
   if (term_sizing(opt) == EXIT_FAILURE)
@@ -238,7 +238,7 @@ reload_interface(t_opts *opt) {
 
 static int
 load_interface(t_opts *opt) {
-  wclear(g_windows.main);
+  wclear(g_windows->main);
   if (term_sizing(opt) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   if (init_winboxes(opt) == EXIT_FAILURE)
@@ -251,7 +251,9 @@ load_interface(t_opts *opt) {
 
 int
 win_init(t_opts *opt) {
-  if (!(g_windows.main = initscr()))
+  if (!(g_windows = malloc(sizeof(*g_windows))))
+    return (fail_print(ERR_MALLOC));
+  if (!(g_windows->main = initscr()))
     return (fail_print(-1));
   keypad(stdscr, true);
   cbreak();
