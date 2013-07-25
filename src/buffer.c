@@ -105,14 +105,14 @@ int
 push_buff(t_buff *buff, char *str, size_t count) {
   size_t	i = 0, d;
 
-  while (buff->next) buff = buff->next;
+  while (buff->next)
+    buff = buff->next;
   while (i < count) {
     if (buff->count == BUFF_SIZE) {
-      if ((buff = add_buff(buff)) == NULL) {
+      if ((buff = add_buff(buff)) == NULL)
 	return (EXIT_FAILURE);
-      }
     }
-    d = ( ((count - i) < (BUFF_SIZE - buff->count)) ?
+    d = (((count - i) < (BUFF_SIZE - buff->count)) ?
 	count - i :
 	BUFF_SIZE - buff->count
 	);

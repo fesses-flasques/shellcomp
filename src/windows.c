@@ -108,10 +108,10 @@ aff_invalid_range(t_opts *opt, int aff) {
 static int
 invalid_range(void) {
   if (g_winsize.ws_row <= 6 || g_winsize.ws_col <= 18) {
-    g_run.running = 0;
+    g_run->running = 0;
     return (EXIT_FAILURE);
   }
-  g_run.running = 1;
+  g_run->running = 1;
   aff_invalid_range(NULL, 0);
   return (EXIT_SUCCESS);
 }
@@ -224,7 +224,7 @@ reload_interface(t_opts *opt) {
   if (term_sizing(opt) == EXIT_FAILURE)
     return (EXIT_FAILURE);
 #endif
-  if (!g_run.running)
+  if (!g_run->running)
     return (EXIT_SUCCESS);
   if (resize_bd_wins() == EXIT_FAILURE ||
       resize_box_wins() == EXIT_FAILURE ||
@@ -243,7 +243,7 @@ load_interface(t_opts *opt) {
     return (EXIT_FAILURE);
   if (init_winboxes(opt) == EXIT_FAILURE)
     return (EXIT_FAILURE);
-  if (g_run.running)
+  if (g_run->running)
     if (refresh_win(opt) == EXIT_FAILURE)
       return (EXIT_FAILURE);
   return (EXIT_SUCCESS);

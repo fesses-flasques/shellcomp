@@ -3,12 +3,12 @@
 #include	"windows.h"
 #include	"shellcomp.h"
 
-t_run		g_run;
+t_run		*g_run = NULL;
 
 static int
 init_run(t_opts *opt) {
   (void)opt;
-  g_run.running = 1;
+  g_run->running = 1;
   return (EXIT_SUCCESS);
 }
 
@@ -16,6 +16,8 @@ int
 launch(t_opts *opt) {
   int	ret;
 
+  if (!(g_run = malloc(sizeof(*g_run))))
+    return (EXIT_FAILURE);
   if (init_run(opt) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   if (win_init(opt) == EXIT_FAILURE)

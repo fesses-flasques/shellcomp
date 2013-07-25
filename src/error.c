@@ -19,6 +19,8 @@ static char *err_table[] = {
 
 int
 fail_print(e_errndx ndx) {
+  if (ndx == -1)
+    return (0);
   if (ndx == PERROR)
     perror("Error");
   else

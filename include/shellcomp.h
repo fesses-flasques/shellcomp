@@ -18,6 +18,6 @@ typedef		struct {
   int		running;
 }		t_run;
 
-extern t_run	g_run;
+extern t_run	*g_run;
 
 #endif
