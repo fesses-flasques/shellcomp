@@ -179,20 +179,11 @@ term_sizing(t_opts *opt) {
 }
 
 static int
-resize_bd_wins(void) {
-  if (wresize(g_windows->bd_left, g_windows->bd_y, g_windows->bd_x) == ERR)
-    return (fail_print(ERR_WINRSZ));
-  if (wresize(g_windows->bd_right, g_windows->bd_y, g_windows->bd_x) == ERR)
-    return (fail_print(ERR_WINRSZ));
-  return (EXIT_SUCCESS);
-}
-
-static int
-resize_box_wins(void) {
-  if (box(g_windows->bd_left, 0, 0) != OK)
-    return (fail_print(ERR_BOX));
-  if (box(g_windows->bd_right, 0, 0) != OK)
-    return (fail_print(ERR_BOX));
+apply_tc_windows(int (*pfunc)(WINDOW *, int, int), int y, int x, e_errndx e) {
+  if (pfunc(g_windows->bd_left, y, x) != OK)
+    return (fail_print(e));
+  if (pfunc(g_windows->bd_right, y, x) != OK)
+    return (fail_print(e));
   return (EXIT_SUCCESS);
 }
 
@@ -226,8 +217,12 @@ reload_interface(t_opts *opt) {
 #endif
   if (!g_run->running)
     return (EXIT_SUCCESS);
-  if (resize_bd_wins() == EXIT_FAILURE ||
-      resize_box_wins() == EXIT_FAILURE ||
+  if (apply_tc_windows(
+	wresize, g_windows->bd_y, g_windows->bd_x, ERR_WINRSZ
+	) == EXIT_FAILURE ||
+      apply_tc_windows(
+	(void *)box, 0, 0, ERR_BOX
+	) == EXIT_FAILURE ||
       resize_wins() == EXIT_FAILURE ||
       mv_wins() == EXIT_FAILURE)
     return (EXIT_FAILURE);
