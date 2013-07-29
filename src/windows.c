@@ -27,8 +27,11 @@ send_size(int fd) {
 
   ws.ws_row = g_windows->y;
   ws.ws_col = g_windows->x;
+
+  // Those are ignored
   ws.ws_xpixel = 0;
   ws.ws_ypixel = 0;
+
   if (ioctl(fd, TIOCSWINSZ, &ws) == -1)
     return (fail_print(ERR_IOCTL));
   return (EXIT_SUCCESS);

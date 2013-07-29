@@ -28,7 +28,7 @@ init_buff(t_buff *obj) {
     return (EXIT_FAILURE);
 
   // Just for valgrind...
-  memset(obj->buff, 0, BUFF_SIZE * sizeof(*(obj->buff)));
+  memset(obj->buff, 'a', BUFF_SIZE * sizeof(*(obj->buff)));
 
   obj->next = NULL;
   return (EXIT_SUCCESS);
@@ -38,10 +38,10 @@ static int
 send_lines(t_buff *b, size_t count, int (*cb)(char *, size_t)) {
   if (!b)
     return (EXIT_SUCCESS);
-  if (cb(b->buff + count, BUFF_SIZE - count) == EXIT_FAILURE)
+  if (cb(b->buff + count, b->count) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   while ((b = b->next) != NULL) {
-    if (cb(b->buff, BUFF_SIZE) == EXIT_FAILURE)
+    if (cb(b->buff, b->count) == EXIT_FAILURE)
       return (EXIT_FAILURE);
   }
   return (EXIT_SUCCESS);

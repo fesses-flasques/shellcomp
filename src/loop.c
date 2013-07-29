@@ -183,8 +183,6 @@ loop(t_opts *opt) {
     return (fail_print(ERR_MALLOC));
   if (launch_shells(opt) == EXIT_FAILURE)
     return (EXIT_FAILURE);
-  if (apply_sizes() == EXIT_FAILURE)
-    return (EXIT_FAILURE);
   fd_setter();
   highest = (
       g_select->fd_l > g_select->fd_r ?
