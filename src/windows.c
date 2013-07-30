@@ -8,6 +8,7 @@
 #include	"shellcomp.h"
 
 static struct winsize	g_winsize;
+static struct winsize	g_ws_each;
 
 static struct {
   WINDOW	*main;
@@ -23,16 +24,14 @@ static struct {
 
 int
 send_size(int fd) {
-  struct winsize	ws;
-
-  ws.ws_row = g_windows->y;
-  ws.ws_col = g_windows->x;
+  g_ws_each.ws_row = g_windows->y;
+  g_ws_each.ws_col = g_windows->x;
 
   // Those are ignored
-  ws.ws_xpixel = 0;
-  ws.ws_ypixel = 0;
+  g_ws_each.ws_xpixel = 0;
+  g_ws_each.ws_ypixel = 0;
 
-  if (ioctl(fd, TIOCSWINSZ, &ws) == -1)
+  if (ioctl(fd, TIOCSWINSZ, &g_ws_each) == -1)
     return (fail_print(ERR_IOCTL));
   return (EXIT_SUCCESS);
 }
@@ -78,9 +77,9 @@ update_display(void) {
     return (EXIT_FAILURE);
   x = g_windows->x;
   y = g_windows->y;
-  if (buff_lines_r(&update_display_r, x, y) == EXIT_FAILURE)
+  if (buff_lines_r(&update_display_r, &g_ws_each) == EXIT_FAILURE)
     return (EXIT_FAILURE);
-  if (buff_lines_l(&update_display_l, x, y) == EXIT_FAILURE)
+  if (buff_lines_l(&update_display_l, &g_ws_each) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   return (EXIT_SUCCESS);
 }

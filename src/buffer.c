@@ -26,10 +26,6 @@ init_buff(t_buff *obj) {
   obj->count = 0;
   if (!(obj->buff = malloc(BUFF_SIZE * sizeof(*(obj->buff)))))
     return (EXIT_FAILURE);
-
-  // Just for valgrind...
-  memset(obj->buff, 'a', BUFF_SIZE * sizeof(*(obj->buff)));
-
   obj->next = NULL;
   return (EXIT_SUCCESS);
 }
@@ -51,30 +47,27 @@ static int
 buff_lines(
     t_buff *b,
     int (*cb)(char *, size_t),
-    unsigned short x,
-    unsigned short y
+    struct winsize *ws
     ) {
-  (void)x,(void)y,(void)b;
+  //buff_lines_geteach(b, 0, );
+  (void)ws;
   return (send_lines(b, 0, cb));
-  return (EXIT_SUCCESS);
 }
 
 int
 buff_lines_r(
-    int (*cb)(char *, size_t),
-    unsigned short x,
-    unsigned short y
+    int	(*cb)(char *, size_t),
+    struct winsize *ws
     ) {
-  return (buff_lines(g_buff.r, cb, x, y));
+  return (buff_lines(g_buff.r, cb, ws));
 }
 
 int
 buff_lines_l(
     int (*cb)(char *, size_t),
-    unsigned short x,
-    unsigned short y
+    struct winsize *ws
     ) {
-  return (buff_lines(g_buff.l, cb, x, y));
+  return (buff_lines(g_buff.l, cb, ws));
 }
 
 int
