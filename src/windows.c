@@ -43,6 +43,8 @@ write_to_window(WINDOW *w, char *str, size_t s) {
   while (i < s) {
     if (str[i] != '\r')
       wprintw(w, "%c", str[i]);
+    else
+      wprintw(w, "%c", '0');
     ++i;
   }
   return (EXIT_SUCCESS);

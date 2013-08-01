@@ -13,7 +13,7 @@ void logger(char *str) {
     return ;
   }
   fprintf(fd, "%s", str);
-  fflush(fd);
+  //fflush(fd);
 }
 void logger_int(int i) {
   char		*str = NULL;
