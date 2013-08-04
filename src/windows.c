@@ -43,8 +43,10 @@ write_to_window(WINDOW *w, char *str, size_t s) {
   while (i < s) {
     if (str[i] != '\r')
       wprintw(w, "%c", str[i]);
+    /*
     else
       wprintw(w, "%c", '0');
+      */
     ++i;
   }
   return (EXIT_SUCCESS);
@@ -70,10 +72,12 @@ update_display_l(char *str, size_t s) {
   return (write_to_window(g_windows->left, str, s));
 }
 
+void clear_subwin(void);
 int
 update_display(void) {
   register unsigned short	x, y;
 
+  clear_subwin();
   if (wmove(g_windows->left, 0, 0) == ERR ||
       wmove(g_windows->right, 0, 0) == ERR)
     return (EXIT_FAILURE);
@@ -211,6 +215,12 @@ mv_wins(void) {
   return (EXIT_SUCCESS);
 }
 
+void
+clear_subwin(void) {
+  wclear(g_windows->left);
+  wclear(g_windows->right);
+}
+
 int
 reload_interface(t_opts *opt) {
   wclear(g_windows->main);
@@ -268,9 +278,6 @@ win_init(t_opts *opt) {
 int
 win_destroy(t_opts *opt) {
   (void)opt;
-  logger("End win\n");
   endwin();
-  logger("endwindone\n");
-  exit(1);
   return (EXIT_SUCCESS);
 }

@@ -21,6 +21,8 @@ void logger_int(int i) {
   logger(str);
 }
 
+int send_sigint(void);
+
 void
 sig_catch(int sig) {
   if (sig == SIGWINCH) {
@@ -30,6 +32,9 @@ sig_catch(int sig) {
       exit(EXIT_FAILURE);
     if (reload_interface(NULL) == EXIT_FAILURE)
       exit(EXIT_FAILURE);
+  }
+  if (sig == SIGINT) {
+    send_sigint();
   }
 }
 
@@ -58,7 +63,7 @@ check_opt(t_opts *opt) {
 static int
 init_signals(__sighandler_t assign) {
   int		signum_tab[] = {
-    //SIGINT,
+    SIGINT,
     SIGTERM,
     SIGWINCH,
     SIGQUIT

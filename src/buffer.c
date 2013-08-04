@@ -30,6 +30,7 @@ init_buff(t_buff *obj) {
   return (EXIT_SUCCESS);
 }
 
+
 static int
 send_lines(t_buff *b, size_t count, int (*cb)(char *, size_t)) {
   if (!b)
@@ -74,8 +75,9 @@ buff_lines_each(t_buff *b, size_t i, int (*cb)(), struct winsize *ws) {
   while (s != NULL) {
     if (nb >= ws->ws_col || s->buff[current] == '\n') {
       gn = set_curr(s, current);
-      if (!(nb = 1 + buff_lines_each((!gn) ? s->next : s, gn, cb, ws)))
+      if (!(nb = 1 + buff_lines_each((!gn) ? s->next : s, gn, cb, ws))) {
 	return (-1);
+      }
       if (nb >= ws->ws_row) {
 	buff_lines_cb(b, i, cb);
 	return (-1);

@@ -9,6 +9,7 @@
 #include	"error.h"
 #include	"windows.h"
 
+static int forkint;
 //#define NO_SECOND
 static struct {
   fd_set	fd_save;
@@ -16,6 +17,23 @@ static struct {
   int		fd_l;
   int		fd_r;
 }		*g_select = NULL;
+
+int
+send_sigint(void) {
+  return (EXIT_SUCCESS);
+#if 1
+  struct termios var;
+  
+  tcgetattr(g_select->fd_l, &var);
+  var.c_lflag |= ISIG;
+  tcsetattr(g_select->fd_l, TCSANOW, &var);
+  ioctl(g_select->fd_l, TCSBRK, &var);
+#else
+  if (ioctl(g_select->fd_l, TIOCSIGNAL, SIGINT) != 0)
+    perror("ERROR");
+#endif
+  return (EXIT_SUCCESS);
+}
 
 int
 apply_sizes(void) {
@@ -54,6 +72,7 @@ forkito(t_opts *opt, char *shell) {
     execlp(shell, shell, NULL);
     return (-2);
   }
+  forkint = fork_ret;
   close(fd_slave);
   return (fd_master);
 }
@@ -95,7 +114,9 @@ monitoring_checkshell(int fd, int (*cb)(char *, size_t)) {
 static int
 shell_transmit(char *str, size_t s) {
   write(g_select->fd_l, str, s);
+#ifndef NO_SECOND
   write(g_select->fd_r, str, s);
+#endif
   return (EXIT_SUCCESS);
 }
 
