@@ -30,11 +30,13 @@ init_buff(t_buff *obj) {
   return (EXIT_SUCCESS);
 }
 
+
 static int
 send_lines(t_buff *b, size_t count, int (*cb)(char *, size_t)) {
   if (!b)
     return (EXIT_SUCCESS);
-  if (cb(b->buff + count, b->count) == EXIT_FAILURE)
+  //write(1, b->buff + count, b->count - count);
+  if (cb(b->buff + count, b->count - count) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   while ((b = b->next) != NULL) {
     if (cb(b->buff, b->count) == EXIT_FAILURE)
@@ -44,33 +46,69 @@ send_lines(t_buff *b, size_t count, int (*cb)(char *, size_t)) {
 }
 
 static int
+buff_lines_cb(t_buff *b, size_t i, int (*cb)()) {
+  //logger(b == NULL ? "YES" : "NO");
+  if (send_lines(b, i, cb) == EXIT_FAILURE) {
+  }
+  return (EXIT_SUCCESS);
+}
+
+static size_t
+set_curr(t_buff *b, size_t i) {
+  if (!b) {
+    logger("Y'A UN SOUCIS..\n");
+    return (0);
+  }
+  if (++i >= b->count) {
+    return (0);
+  }
+  return (i);
+}
+
+static int
+buff_lines_each(t_buff *b, size_t i, int (*cb)(), struct winsize *ws) {
+  size_t	current, nb, gn;
+  t_buff	*s = b;
+
+  nb = 0;
+  current = i;
+  while (s != NULL) {
+    if (nb >= ws->ws_col || s->buff[current] == '\n') {
+      gn = set_curr(s, current);
+      if (!(nb = 1 + buff_lines_each((!gn) ? s->next : s, gn, cb, ws))) {
+	return (-1);
+      }
+      if (nb >= ws->ws_row) {
+	buff_lines_cb(b, i, cb);
+	return (-1);
+      }
+      return (nb);
+    }
+    if (!(current = set_curr(s, current)))
+      s = s->next;
+    ++nb;
+  }
+  return (1);
+}
+
+static int
 buff_lines(
     t_buff *b,
     int (*cb)(char *, size_t),
-    unsigned short x,
-    unsigned short y
+    struct winsize *ws
     ) {
-  (void)x,(void)y,(void)b;
-  return (send_lines(b, 0, cb));
+  buff_lines_each(b, 0, cb, ws);
   return (EXIT_SUCCESS);
 }
 
 int
-buff_lines_r(
-    int (*cb)(char *, size_t),
-    unsigned short x,
-    unsigned short y
-    ) {
-  return (buff_lines(g_buff.r, cb, x, y));
+buff_lines_r(int (*cb)(char *, size_t), struct winsize *ws) {
+  return (buff_lines(g_buff.r, cb, ws));
 }
 
 int
-buff_lines_l(
-    int (*cb)(char *, size_t),
-    unsigned short x,
-    unsigned short y
-    ) {
-  return (buff_lines(g_buff.l, cb, x, y));
+buff_lines_l(int (*cb)(char *, size_t), struct winsize *ws) {
+  return (buff_lines(g_buff.l, cb, ws));
 }
 
 int

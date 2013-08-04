@@ -8,6 +8,7 @@
 #include	"shellcomp.h"
 
 static struct winsize	g_winsize;
+static struct winsize	g_ws_each;
 
 static struct {
   WINDOW	*main;
@@ -23,16 +24,14 @@ static struct {
 
 int
 send_size(int fd) {
-  struct winsize	ws;
-
-  ws.ws_row = g_windows->y;
-  ws.ws_col = g_windows->x;
+  g_ws_each.ws_row = g_windows->y;
+  g_ws_each.ws_col = g_windows->x;
 
   // Those are ignored
-  ws.ws_xpixel = 0;
-  ws.ws_ypixel = 0;
+  g_ws_each.ws_xpixel = 0;
+  g_ws_each.ws_ypixel = 0;
 
-  if (ioctl(fd, TIOCSWINSZ, &ws) == -1)
+  if (ioctl(fd, TIOCSWINSZ, &g_ws_each) == -1)
     return (fail_print(ERR_IOCTL));
   return (EXIT_SUCCESS);
 }
@@ -44,6 +43,10 @@ write_to_window(WINDOW *w, char *str, size_t s) {
   while (i < s) {
     if (str[i] != '\r')
       wprintw(w, "%c", str[i]);
+    /*
+    else
+      wprintw(w, "%c", '0');
+      */
     ++i;
   }
   return (EXIT_SUCCESS);
@@ -69,18 +72,20 @@ update_display_l(char *str, size_t s) {
   return (write_to_window(g_windows->left, str, s));
 }
 
+void clear_subwin(void);
 int
 update_display(void) {
   register unsigned short	x, y;
 
+  clear_subwin();
   if (wmove(g_windows->left, 0, 0) == ERR ||
       wmove(g_windows->right, 0, 0) == ERR)
     return (EXIT_FAILURE);
   x = g_windows->x;
   y = g_windows->y;
-  if (buff_lines_r(&update_display_r, x, y) == EXIT_FAILURE)
+  if (buff_lines_r(&update_display_r, &g_ws_each) == EXIT_FAILURE)
     return (EXIT_FAILURE);
-  if (buff_lines_l(&update_display_l, x, y) == EXIT_FAILURE)
+  if (buff_lines_l(&update_display_l, &g_ws_each) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   return (EXIT_SUCCESS);
 }
@@ -210,6 +215,12 @@ mv_wins(void) {
   return (EXIT_SUCCESS);
 }
 
+void
+clear_subwin(void) {
+  wclear(g_windows->left);
+  wclear(g_windows->right);
+}
+
 int
 reload_interface(t_opts *opt) {
   wclear(g_windows->main);
@@ -267,9 +278,6 @@ win_init(t_opts *opt) {
 int
 win_destroy(t_opts *opt) {
   (void)opt;
-  logger("End win\n");
   endwin();
-  logger("endwindone\n");
-  exit(1);
   return (EXIT_SUCCESS);
 }
