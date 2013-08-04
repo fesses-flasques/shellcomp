@@ -26,10 +26,6 @@ init_buff(t_buff *obj) {
   obj->count = 0;
   if (!(obj->buff = malloc(BUFF_SIZE * sizeof(*(obj->buff)))))
     return (EXIT_FAILURE);
-
-  // Just for valgrind...
-  memset(obj->buff, 'a', BUFF_SIZE * sizeof(*(obj->buff)));
-
   obj->next = NULL;
   return (EXIT_SUCCESS);
 }
