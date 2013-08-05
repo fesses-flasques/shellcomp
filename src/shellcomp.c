@@ -63,7 +63,7 @@ check_opt(t_opts *opt) {
 static int
 init_signals(__sighandler_t assign) {
   int		signum_tab[] = {
-    SIGINT,
+//    SIGINT,
     SIGTERM,
     SIGWINCH,
     SIGQUIT
@@ -77,11 +77,16 @@ init_signals(__sighandler_t assign) {
   return (EXIT_SUCCESS);
 }
 
+int	failer_buff(void);
+
 int
 main(int argc, char **argv) {
   t_opts	opt;
 
   logger(NULL); // TMP
+#if 0
+  return (failer_buff());
+#endif
   if (build_opts(&opt, "h", argc, argv) == EXIT_FAILURE)
     return (fail_print(ERR_OPT));
   if (check_opt(&opt) == EXIT_FAILURE)

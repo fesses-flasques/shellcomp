@@ -27,6 +27,7 @@ init_buff(t_buff *obj) {
   if (!(obj->buff = malloc(BUFF_SIZE * sizeof(*(obj->buff)))))
     return (EXIT_FAILURE);
   obj->next = NULL;
+  //obj->buff[0] = 0;
   return (EXIT_SUCCESS);
 }
 
@@ -36,6 +37,8 @@ send_lines(t_buff *b, size_t count, int (*cb)(char *, size_t)) {
   if (!b)
     return (EXIT_SUCCESS);
   //write(1, b->buff + count, b->count - count);
+  if (b->buff != NULL)
+    write(1, "A", 1);
   if (cb(b->buff + count, b->count - count) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   while ((b = b->next) != NULL) {
@@ -67,17 +70,14 @@ set_curr(t_buff *b, size_t i) {
 
 static int
 buff_lines_each(t_buff *b, size_t i, int (*cb)(), struct winsize *ws) {
-  size_t	current, nb, gn;
+  size_t	current = i, nb = 0;
   t_buff	*s = b;
 
-  nb = 0;
-  current = i;
   while (s != NULL) {
     if (nb >= ws->ws_col || s->buff[current] == '\n') {
-      gn = set_curr(s, current);
-      if (!(nb = 1 + buff_lines_each((!gn) ? s->next : s, gn, cb, ws))) {
+      current = set_curr(s, current);
+      if (!(nb = 1 + buff_lines_each(!current ? s->next : s, current, cb, ws)))
 	return (-1);
-      }
       if (nb >= ws->ws_row) {
 	buff_lines_cb(b, i, cb);
 	return (-1);
@@ -147,7 +147,7 @@ push_buff(t_buff *buff, char *str, size_t count) {
   while (buff->next)
     buff = buff->next;
   while (i < count) {
-    if (buff->count == BUFF_SIZE) {
+    if (buff->count >= BUFF_SIZE) {
       if ((buff = add_buff(buff)) == NULL)
 	return (EXIT_FAILURE);
     }
@@ -170,4 +170,21 @@ push_buff_left(char *str, size_t count) {
 int
 push_buff_right(char *str, size_t count) {
   return (push_buff(g_buff.r, str, count));
+}
+
+int cb_func(char *a, size_t b) {
+  write(1, a, b);
+  return (0);
+}
+
+int	failer_buff(void) {
+  struct winsize ws = {40, 40, 0, 0};
+  if (buff_init(NULL) == EXIT_FAILURE)
+    return (EXIT_FAILURE);
+  push_buff_left("abcde", 5);
+  push_buff_left("fghij", 5);
+  push_buff_left("klmno", 5);
+  push_buff_left("zxcvmnzmxcvn", 12);
+  buff_lines_l(cb_func, &ws);
+  return (EXIT_SUCCESS);
 }
