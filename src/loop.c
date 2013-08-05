@@ -23,7 +23,7 @@ send_sigint(void) {
   return (EXIT_SUCCESS);
 #if 1
   struct termios var;
-  
+
   tcgetattr(g_select->fd_l, &var);
   var.c_lflag |= ISIG;
   tcsetattr(g_select->fd_l, TCSANOW, &var);

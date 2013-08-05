@@ -97,7 +97,8 @@ buff_lines(
     int (*cb)(char *, size_t),
     struct winsize *ws
     ) {
-  buff_lines_each(b, 0, cb, ws);
+  if (buff_lines_each(b, 0, cb, ws) != -1)
+    buff_lines_cb(b, 0, cb);
   return (EXIT_SUCCESS);
 }
 
