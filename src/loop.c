@@ -99,13 +99,13 @@ launch_shells(t_opts *opt) {
   return (EXIT_SUCCESS);
 }
 
-#define	BUFF_SIZE 4096
+#define	BUFF_READ_SIZE 13
 static int
 monitoring_checkshell(int fd, int (*cb)(char *, size_t)) {
-  char		buff[BUFF_SIZE];
+  char		buff[BUFF_READ_SIZE];
   ssize_t	i;
 
-  if ((i = read(fd, buff, BUFF_SIZE)) == -1) {
+  if ((i = read(fd, buff, BUFF_READ_SIZE)) == -1) {
     return (EXIT_FAILURE);
   }
   return (cb(buff, i));
@@ -113,6 +113,8 @@ monitoring_checkshell(int fd, int (*cb)(char *, size_t)) {
 
 static int
 shell_transmit(char *str, size_t s) {
+  if (g_run->running == 0)
+    return (EXIT_SUCCESS);
   write(g_select->fd_l, str, s);
 #ifndef NO_SECOND
   write(g_select->fd_r, str, s);
@@ -145,18 +147,14 @@ do_select(t_opts *opt, int highest) {
 
   memcpy(&g_select->fd_select, &g_select->fd_save, sizeof(fd_set));
   ret = select(highest, &g_select->fd_select, NULL, NULL, NULL);
-  if (ret == -1 && errno != EINTR) {
-    return (fail_print(ERR_SLCT));
-  }
   if (ret != -1) {
-    if (monitoring(opt) == EXIT_FAILURE) {
-      return (EXIT_FAILURE);
-    }
-    if (update_display() == EXIT_FAILURE)
-      return (EXIT_FAILURE);
-    if (refresh_win(opt) == EXIT_FAILURE)
+    if ((monitoring(opt) == EXIT_FAILURE)
+	|| (update_display() == EXIT_FAILURE)
+	|| (refresh_win(opt) == EXIT_FAILURE))
       return (EXIT_FAILURE);
   }
+  else if (errno != EINTR)
+    return (fail_print(ERR_SLCT));
   return (EXIT_SUCCESS);
 }
 

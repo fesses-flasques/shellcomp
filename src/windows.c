@@ -166,8 +166,8 @@ init_winboxes(t_opts *opt) {
 
   if (!(g_windows->left = newwin(g_windows->y, g_windows->x, 1, 1)))
     return (fail_print(ERR_NEWWIN));
-  if (!(g_windows->right = newwin(g_windows->y, g_windows->x,
-	  1, g_windows->bd_x + 1)))
+  if (!(g_windows->right = newwin(g_windows->y, g_windows->x, 1,
+	  g_windows->bd_x + 1)))
     return (fail_print(ERR_NEWWIN));
   /**/
   return (EXIT_SUCCESS);
@@ -217,6 +217,7 @@ mv_wins(void) {
 
 void
 clear_subwin(void) {
+  return ;
   wclear(g_windows->left);
   wclear(g_windows->right);
 }

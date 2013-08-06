@@ -37,8 +37,6 @@ send_lines(t_buff *b, size_t count, int (*cb)(char *, size_t)) {
   if (!b)
     return (EXIT_SUCCESS);
   //write(1, b->buff + count, b->count - count);
-  if (b->buff != NULL)
-    write(1, "A", 1);
   if (cb(b->buff + count, b->count - count) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   while ((b = b->next) != NULL) {
