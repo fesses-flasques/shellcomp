@@ -31,7 +31,6 @@ init_buff(t_buff *obj) {
   return (EXIT_SUCCESS);
 }
 
-
 static int
 send_lines(t_buff *b, size_t count, int (*cb)(char *, size_t)) {
   if (!b)
@@ -97,6 +96,8 @@ buff_lines(
     ) {
   if (buff_lines_each(b, 0, cb, ws) != -1)
     buff_lines_cb(b, 0, cb);
+  else
+    cb("\r\n", 2);
   return (EXIT_SUCCESS);
 }
 
