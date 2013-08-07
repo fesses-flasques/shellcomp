@@ -72,7 +72,6 @@ update_display_l(char *str, size_t s) {
   return (write_to_window(g_windows->left, str, s));
 }
 
-void clear_subwin(void);
 int
 update_display(void) {
   register unsigned short	x, y;
@@ -221,8 +220,9 @@ mv_wins(void) {
   return (EXIT_SUCCESS);
 }
 
-static void
-clear_subwin(void) {
+static void __attribute__ ((unused)) // GNU dependent
+clear_subwin(void)
+{
   wclear(g_windows->left);
   wclear(g_windows->right);
 }
