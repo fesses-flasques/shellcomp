@@ -77,7 +77,11 @@ int
 update_display(void) {
   register unsigned short	x, y;
 
+#if 0
   clear_subwin();
+#endif
+  if (g_run->running == 0)
+    return (EXIT_SUCCESS);
   if (wmove(g_windows->left, 0, 0) == ERR ||
       wmove(g_windows->right, 0, 0) == ERR)
     return (EXIT_FAILURE);
@@ -129,6 +133,8 @@ invalid_range(void) {
 int
 refresh_win(t_opts *opt) {
   (void)opt;
+  if (g_run->running == 0)
+    return (EXIT_SUCCESS);
   refresh();
   if (wrefresh(g_windows->bd_left) == ERR)
     return (EXIT_FAILURE);

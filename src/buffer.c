@@ -27,7 +27,6 @@ init_buff(t_buff *obj) {
   if (!(obj->buff = malloc(BUFF_SIZE * sizeof(*(obj->buff)))))
     return (EXIT_FAILURE);
   obj->next = NULL;
-  //obj->buff[0] = 0;
   return (EXIT_SUCCESS);
 }
 
@@ -35,7 +34,6 @@ static int
 send_lines(t_buff *b, size_t count, int (*cb)(char *, size_t)) {
   if (!b)
     return (EXIT_SUCCESS);
-  //write(1, b->buff + count, b->count - count);
   if (cb(b->buff + count, b->count - count) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   while ((b = b->next) != NULL) {
@@ -47,7 +45,6 @@ send_lines(t_buff *b, size_t count, int (*cb)(char *, size_t)) {
 
 static int
 buff_lines_cb(t_buff *b, size_t i, int (*cb)()) {
-  //logger(b == NULL ? "YES" : "NO");
   if (send_lines(b, i, cb) == EXIT_FAILURE) {
   }
   return (EXIT_SUCCESS);
