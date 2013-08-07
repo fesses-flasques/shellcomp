@@ -221,9 +221,8 @@ mv_wins(void) {
   return (EXIT_SUCCESS);
 }
 
-void
+static void
 clear_subwin(void) {
-  return ;
   wclear(g_windows->left);
   wclear(g_windows->right);
 }
