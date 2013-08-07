@@ -220,9 +220,8 @@ mv_wins(void) {
   return (EXIT_SUCCESS);
 }
 
-static void __attribute__ ((unused)) // GNU dependent
-clear_subwin(void)
-{
+void
+clear_subwin(void) {
   wclear(g_windows->left);
   wclear(g_windows->right);
 }

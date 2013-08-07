@@ -4,7 +4,7 @@
 # include	<sys/ioctl.h>
 # include	"build_opts.h"
 # define	BUFF_SIZE	1024
-# define	LIMIT_BUFF	9 // TODO
+# define	LIMIT_BUFF	3
 # define	CRLF		"\r\n"
 
 typedef	struct	s_buff {

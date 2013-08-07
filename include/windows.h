@@ -4,6 +4,7 @@
 # include	"build_opts.h"
 # include	"shellcomp.h"
 
+void		clear_subwin(void);
 int		term_sizing(t_opts *);
 int		send_size(int);
 int		update_display(void);

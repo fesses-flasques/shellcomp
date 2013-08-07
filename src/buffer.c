@@ -1,5 +1,6 @@
 #include	<stdlib.h>
 #include	"shellcomp.h"
+#include	"windows.h"
 #include	"buffer.h"
 
 static struct {
@@ -26,6 +27,7 @@ init_buff(t_buff *obj) {
   obj->count = 0;
   if (!(obj->buff = malloc(BUFF_SIZE * sizeof(*(obj->buff)))))
     return (EXIT_FAILURE);
+  obj->buff[0] = '\n';
   obj->next = NULL;
   return (EXIT_SUCCESS);
 }
@@ -113,15 +115,40 @@ buff_init(t_opts *opt) {
   (void)opt;
   if (!(g_buff.l = malloc(sizeof(*(g_buff.l)))))
     return (EXIT_FAILURE);
-  if (!(g_buff.r = malloc(sizeof(*(g_buff.r))))) {
-    free(g_buff.r);
+  if (!(g_buff.r = malloc(sizeof(*(g_buff.r)))))
     return (EXIT_FAILURE);
-  }
   if (init_buff(g_buff.l) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   if (init_buff(g_buff.r) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   return (EXIT_SUCCESS);
+}
+
+static void
+del_buff(t_buff **obj) {
+  t_buff	*tmp = (*obj);
+
+  *obj = (*obj)->next;
+  free(tmp->buff);
+  free(tmp);
+}
+
+static void
+buff_flush(t_buff **buff) {
+  t_buff	*tmp = *buff;
+  size_t	i = 0;
+
+  while (tmp != NULL && i < LIMIT_BUFF) {
+    ++i;
+    tmp = tmp->next;
+  }
+  if (tmp != NULL) {
+    while (tmp != NULL) {
+      del_buff(buff);
+      tmp = tmp->next;
+    }
+    clear_subwin();
+  }
 }
 
 static t_buff *
@@ -136,7 +163,7 @@ add_buff(t_buff *obj) {
   return (new);
 }
 
-int
+static int
 push_buff(t_buff *buff, char *str, size_t count) {
   size_t	i = 0, d;
 
@@ -160,11 +187,13 @@ push_buff(t_buff *buff, char *str, size_t count) {
 
 int
 push_buff_left(char *str, size_t count) {
+  buff_flush(&g_buff.l);
   return (push_buff(g_buff.l, str, count));
 }
 
 int
 push_buff_right(char *str, size_t count) {
+  buff_flush(&g_buff.r);
   return (push_buff(g_buff.r, str, count));
 }
 
