@@ -94,7 +94,7 @@ buff_lines(
   if (buff_lines_each(b, 0, cb, ws) != -1)
     buff_lines_cb(b, 0, cb);
   else
-    cb("\r\n", 2);
+    cb(CRLF, sizeof(CRLF));
   return (EXIT_SUCCESS);
 }
 

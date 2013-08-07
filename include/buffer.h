@@ -5,6 +5,7 @@
 # include	"build_opts.h"
 # define	BUFF_SIZE	1024
 # define	LIMIT_BUFF	9 // TODO
+# define	CRLF		"\r\n"
 
 typedef	struct	s_buff {
   size_t	count;
