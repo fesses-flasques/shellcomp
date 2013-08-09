@@ -54,14 +54,7 @@ buff_lines_cb(t_buff *b, size_t i, int (*cb)()) {
 
 static size_t
 set_curr(t_buff *b, size_t i) {
-  if (!b) {
-    logger("Y'A UN SOUCIS..\n");
-    return (0);
-  }
-  if (++i >= b->count) {
-    return (0);
-  }
-  return (i);
+  return (++i * (i < b->count));
 }
 
 static int
