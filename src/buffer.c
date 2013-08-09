@@ -45,16 +45,27 @@ send_lines(t_buff *b, size_t count, int (*cb)(char *, size_t)) {
   return (EXIT_SUCCESS);
 }
 
-static int
+inline static int
 buff_lines_cb(t_buff *b, size_t i, int (*cb)()) {
   if (send_lines(b, i, cb) == EXIT_FAILURE) {
   }
   return (EXIT_SUCCESS);
 }
 
-static size_t
+inline static size_t
 set_curr(t_buff *b, size_t i) {
+#if 0
+  // Replaced old routine less "sexy"
+  return (++i >= b->count ? 0 : i);
+#else
   return (++i * (i < b->count));
+#endif
+}
+inline static size_t
+set_buffcurr(t_buff **b, size_t i) {
+  if (!(i = set_curr(*b, i)))
+    *b = (*b)->next;
+  return (i);
 }
 
 static int
@@ -64,8 +75,8 @@ buff_lines_each(t_buff *b, size_t i, int (*cb)(), struct winsize *ws) {
 
   while (s != NULL) {
     if (nb >= ws->ws_col || s->buff[current] == '\n') {
-      current = set_curr(s, current);
-      if (!(nb = 1 + buff_lines_each(!current ? s->next : s, current, cb, ws)))
+      current = set_buffcurr(&s, current);
+      if (!(nb = 1 + buff_lines_each(s, current, cb, ws)))
 	return (-1);
       if (nb >= ws->ws_row) {
 	buff_lines_cb(b, i, cb);
@@ -73,8 +84,7 @@ buff_lines_each(t_buff *b, size_t i, int (*cb)(), struct winsize *ws) {
       }
       return (nb);
     }
-    if (!(current = set_curr(s, current)))
-      s = s->next;
+    current = set_buffcurr(&s, current);
     ++nb;
   }
   return (1);
