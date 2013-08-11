@@ -61,6 +61,7 @@ set_curr(t_buff *b, size_t i) {
   return (++i * (i < b->count));
 #endif
 }
+
 inline static size_t
 set_buffcurr(t_buff **b, size_t i) {
   if (!(i = set_curr(*b, i)))

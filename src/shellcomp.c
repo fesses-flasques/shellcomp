@@ -30,6 +30,7 @@ sig_catch(int sig) {
       exit(EXIT_FAILURE);
     if (apply_sizes() == EXIT_FAILURE)
       exit(EXIT_FAILURE);
+    clear_subwin();
     if (reload_interface(NULL) == EXIT_FAILURE)
       exit(EXIT_FAILURE);
   }
