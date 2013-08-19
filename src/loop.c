@@ -72,6 +72,7 @@ forkito(t_opts *opt, char *shell) {
     execlp(shell, shell, NULL);
     return (-2);
   }
+
   forkint = fork_ret;
   close(fd_slave);
   return (fd_master);
@@ -113,7 +114,7 @@ monitoring_checkshell(int fd, int (*cb)(char *, size_t)) {
 
 static int
 shell_transmit(char *str, size_t s) {
-  if (g_run->running == 0)
+  if (g_run.running == 0)
     return (EXIT_SUCCESS);
   write(g_select->fd_l, str, s);
 #ifndef NO_SECOND
@@ -195,11 +196,27 @@ callback_childs() {
 }
 
 int
+loop_init(t_opts *opt) {
+  (void)opt;
+  if (!(g_select = malloc(sizeof(*g_select))))
+    return (fail_print(ERR_MALLOC));
+  memset(g_select, 0, sizeof(*g_select));
+  return (EXIT_SUCCESS);
+}
+
+void
+loop_delete(void) {
+  if (g_select->fd_l)
+    close(g_select->fd_l);
+  if (g_select->fd_r)
+    close(g_select->fd_r);
+  free(g_select);
+}
+
+int
 loop(t_opts *opt) {
   int		highest;
 
-  if (!(g_select = malloc(sizeof(*g_select))))
-    return (fail_print(ERR_MALLOC));
   if (launch_shells(opt) == EXIT_FAILURE)
     return (EXIT_FAILURE);
   fd_setter();

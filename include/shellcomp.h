@@ -9,6 +9,7 @@ int		launch(t_opts *);
 void		sig_catch(int);
 int		callback_childs();
 int		apply_sizes(void);
+int		init_all_modules(t_opts *);
 
 //TMP
 void	logger_int(int);
@@ -18,6 +19,6 @@ typedef		struct {
   int		running;
 }		t_run;
 
-extern t_run	*g_run;
+extern t_run	g_run;
 
 #endif

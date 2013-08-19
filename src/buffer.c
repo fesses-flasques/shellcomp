@@ -6,21 +6,9 @@
 static struct {
   t_buff	*l;
   t_buff	*r;
-}		g_buff;
-
-#include	<stdio.h>
-#define	SEP "%ld ===================================\n"
-void
-buff_dumper() {
-  t_buff *a = g_buff.l;
-  while (a) {
-    fprintf(stdout, SEP, a->count);
-    fflush(stdout);
-    write(1, a->buff, a->count);
-    write(1, "\n", 1);
-    a = a->next;
-  }
-}
+}		g_buff = {
+  NULL, NULL
+};
 
 static int
 init_buff(t_buff *obj) {
@@ -113,6 +101,7 @@ int
 buff_lines_l(int (*cb)(char *, size_t), struct winsize *ws) {
   return (buff_lines(g_buff.l, cb, ws));
 }
+#include	<stdio.h>
 
 int
 buff_init(t_opts *opt) {
@@ -135,6 +124,24 @@ del_buff(t_buff **obj) {
   *obj = (*obj)->next;
   free(tmp->buff);
   free(tmp);
+}
+
+static
+void
+buff_delete_each(t_buff *t) {
+  t_buff	*b = t;
+
+  while (t) {
+    del_buff(&t);
+    t = b->next;
+    b = t;
+  }
+}
+
+void
+buff_delete(void) {
+  buff_delete_each(g_buff.l);
+  buff_delete_each(g_buff.r);
 }
 
 static void

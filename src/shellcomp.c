@@ -92,6 +92,8 @@ main(int argc, char **argv) {
     return (fail_print(ERR_OPT));
   if (check_opt(&opt) == EXIT_FAILURE)
     return (fail_print(ERR_OPT));
+  if (init_all_modules(&opt) == EXIT_FAILURE)
+    return (EXIT_FAILURE);
   if (init_signals(&sig_catch))
     return (fail_print(ERR_SIG));
   return (launch(&opt));

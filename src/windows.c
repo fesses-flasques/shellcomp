@@ -79,7 +79,7 @@ update_display(void) {
 #if 0
   clear_subwin();
 #endif
-  if (g_run->running == 0)
+  if (g_run.running == 0)
     return (EXIT_SUCCESS);
   if (wmove(g_windows->left, 0, 0) == ERR ||
       wmove(g_windows->right, 0, 0) == ERR)
@@ -121,10 +121,10 @@ aff_invalid_range(t_opts *opt, int aff) {
 static int
 invalid_range(void) {
   if (g_winsize.ws_row <= 6 || g_winsize.ws_col <= 18) {
-    g_run->running = 0;
+    g_run.running = 0;
     return (EXIT_FAILURE);
   }
-  g_run->running = 1;
+  g_run.running = 1;
   aff_invalid_range(NULL, 0);
   return (EXIT_SUCCESS);
 }
@@ -132,7 +132,7 @@ invalid_range(void) {
 int
 refresh_win(t_opts *opt) {
   (void)opt;
-  if (g_run->running == 0)
+  if (g_run.running == 0)
     return (EXIT_SUCCESS);
   refresh();
   if (wrefresh(g_windows->bd_left) == ERR)
@@ -236,7 +236,7 @@ reload_interface(t_opts *opt) {
   if (term_sizing(opt) == EXIT_FAILURE)
     return (EXIT_FAILURE);
 #endif
-  if (!g_run->running)
+  if (!g_run.running)
     return (EXIT_SUCCESS);
   if (apply_tc_windows(
 	wresize, g_windows->bd_y, g_windows->bd_x, ERR_WINRSZ
@@ -259,7 +259,7 @@ load_interface(t_opts *opt) {
     return (EXIT_FAILURE);
   if (init_winboxes(opt) == EXIT_FAILURE)
     return (EXIT_FAILURE);
-  if (g_run->running)
+  if (g_run.running)
     if (refresh_win(opt) == EXIT_FAILURE)
       return (EXIT_FAILURE);
   return (EXIT_SUCCESS);
@@ -269,6 +269,7 @@ int
 win_init(t_opts *opt) {
   if (!(g_windows = malloc(sizeof(*g_windows))))
     return (fail_print(ERR_MALLOC));
+  memset(g_windows, 0, sizeof(*g_windows));
   if (!(g_windows->main = initscr()))
     return (fail_print(-1));
   keypad(stdscr, true);
@@ -278,6 +279,10 @@ win_init(t_opts *opt) {
   use_default_colors();
   init_pair(1, COLOR_RED, COLOR_RED);
   return (load_interface(opt));
+}
+
+void
+win_delete(void) {
 }
 
 int
