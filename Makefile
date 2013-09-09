@@ -26,7 +26,7 @@ LDFLAGS	+=	-lutil
 CFLAGS	+=	-D_GNU_SOURCE
 CFLAGS	+=	-Wall -Wextra
 CFLAGS	+=	-I$(inc_dir)
-CFLAGS	+=	-g3
+##CFLAGS	+=	-g3
 
 RM	=	rm -fv
 CC	=	clang

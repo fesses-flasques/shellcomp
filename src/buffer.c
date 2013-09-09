@@ -129,12 +129,12 @@ del_buff(t_buff **obj) {
 static
 void
 buff_delete_each(t_buff *t) {
-  t_buff	*b = t;
+  //t_buff	*b = t;
 
   while (t) {
     del_buff(&t);
-    t = b->next;
-    b = t;
+    //t = b->next;
+    //b = t;
   }
 }
 
