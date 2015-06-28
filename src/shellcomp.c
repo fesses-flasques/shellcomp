@@ -54,7 +54,7 @@ check_opt(t_opts *opt) {
 
   if (opts_isset(opt, 'h')) {
     display_usage();
-    return (EXIT_SUCCESS);
+    return (2);
   }
   if (!(rem = opts_getarg(opt, 0)) || !(*rem) || !(rem[1]))
     return (EXIT_FAILURE);
@@ -90,7 +90,7 @@ main(int argc, char **argv) {
 #endif
   if (build_opts(&opt, "h", argc, argv) == EXIT_FAILURE)
     return (fail_print(ERR_OPT));
-  if (check_opt(&opt) == EXIT_FAILURE)
+  if (check_opt(&opt) != EXIT_SUCCESS)
     return (fail_print(ERR_OPT));
   if (init_all_modules(&opt) == EXIT_FAILURE)
     return (EXIT_FAILURE);
